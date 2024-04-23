@@ -37,7 +37,7 @@ Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::RenderWindow& wind
     return level;
 }
 
-std::vector<std::vector<char>> DeserializeMap()
+std::vector<std::vector<char>> DeserializeLevel()
 {
     std::ifstream i(RESOURCES_PATH + "Assets/Map/Map.json");
     nlohmann::json j;

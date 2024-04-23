@@ -24,6 +24,17 @@ void InitSound(Sound& sound)
 	sound.enemyAttackSoundBuffer.loadFromFile(RESOURCES_PATH + "Audio/EnemyAttack.wav");
 	sound.enemyAttackSound.setBuffer(sound.enemyAttackSoundBuffer);
 
+	TurnOnAmbient(sound);
+}
+
+void TurnOnAmbient(Sound& sound)
+{
 	sound.ambient.play();
 	sound.ambientMusic.play();
+}
+
+void TurnOffAmbient(Sound& sound)
+{
+	sound.ambient.stop();
+	sound.ambientMusic.stop();
 }

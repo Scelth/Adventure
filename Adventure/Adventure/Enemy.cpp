@@ -97,8 +97,7 @@ void UpdateEnemy(Enemy& enemy,
 
         enemy.enemySprite.setTextureRect(sf::IntRect(int(enemy.CurrentFrame) * 128, 1664, 128, 128));
 
-        enemy.enemyVelocity.x = 0;
-        enemy.enemyVelocity.y = 0;
+        enemy.enemyVelocity = sf::Vector2f(0.f, 0.f);
     }
 }
 
@@ -142,8 +141,7 @@ float EnemyAttack(Enemy& enemy,
                 sound.enemyAttackSound.play();
             }
 
-            enemy.enemyVelocity.x = 0;
-            enemy.enemyVelocity.y = 0;
+            enemy.enemyVelocity = sf::Vector2f(0.f, 0.f);
         }
     }
 

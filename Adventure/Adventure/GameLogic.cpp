@@ -57,7 +57,7 @@ void StartGame(sf::RenderWindow& window)
 
     InitGame(gameLogic, tileSetTexture, tileSprite);
 
-    gameLogic.levelDescriptor.levelSymbols = DeserializeMap();
+    gameLogic.levelDescriptor.levelSymbols = DeserializeLevel();
     gameLogic.levelDescriptor.tileSetTexture = tileSetTexture;
     gameLogic.level = CreateLevel(gameLogic.levelDescriptor, window);
 
@@ -166,8 +166,7 @@ void UpdateGame(GameLogic& gameLogic,
 
     if (!IsPlayerAlive(gameLogic.player, gameLogic.sound))
     {
-        gameLogic.sound.ambient.stop();
-        gameLogic.sound.ambientMusic.stop();
+        TurnOffAmbient(gameLogic.sound);
 
         gameLogic.gamePaused = true;
     }
@@ -272,8 +271,8 @@ void HandleWindowEvents(sf::RenderWindow& window,
 
                     else if (gameLogic.playerPauseChoice == 1)
                     {
-                        gameLogic.sound.ambient.stop();
-                        gameLogic.sound.ambientMusic.stop();
+                        TurnOffAmbient(gameLogic.sound);
+
                         gameLogic.gamePaused = false;
                         StartGame(window);
                     }

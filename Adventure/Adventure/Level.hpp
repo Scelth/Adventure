@@ -27,4 +27,4 @@ struct LevelDescriptor
 
 void InitLevel(sf::Texture& tileSetTexture, sf::Sprite& tileSprite);
 Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::RenderWindow& window);
-std::vector<std::vector<char>> DeserializeMap();
+std::vector<std::vector<char>> DeserializeLevel();

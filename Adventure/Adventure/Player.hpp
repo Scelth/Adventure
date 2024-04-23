@@ -36,4 +36,5 @@ float PlayerAttack(Player& player,
 
 void PlayerDirection(Player& player);
 
-bool IsPlayerAlive(const Player& player, Sound& sound);
+bool IsPlayerAlive(const Player& player, 
+    Sound& sound);
