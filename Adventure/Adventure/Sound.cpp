@@ -38,3 +38,9 @@ void TurnOffAmbient(Sound& sound)
 	sound.ambient.stop();
 	sound.ambientMusic.stop();
 }
+
+void PauseAmbient(Sound& sound)
+{
+	sound.ambient.pause();
+	sound.ambientMusic.pause();
+}

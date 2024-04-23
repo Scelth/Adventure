@@ -30,3 +30,5 @@ void InitSound(Sound& sound);
 void TurnOnAmbient(Sound& sound);
 
 void TurnOffAmbient(Sound& sound);
+
+void PauseAmbient(Sound& sound);

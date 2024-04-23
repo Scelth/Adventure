@@ -253,6 +253,7 @@ void HandleWindowEvents(sf::RenderWindow& window,
                 if (event.key.code == sf::Keyboard::Escape && !gameLogic.gamePaused)
                 {
                     gameLogic.gamePaused = true;
+                    PauseAmbient(gameLogic.sound);
                 }
 
                 if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Up)
@@ -266,6 +267,7 @@ void HandleWindowEvents(sf::RenderWindow& window,
 
                     if (gameLogic.playerPauseChoice == 0)
                     {
+                        TurnOnAmbient(gameLogic.sound);
                         gameLogic.gamePaused = false;
                     }
 
