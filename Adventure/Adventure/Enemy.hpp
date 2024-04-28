@@ -16,15 +16,18 @@ struct Enemy
     sf::Vector2f enemyVelocity;
 
     float enemySpeed = ENEMY_SPEED;
-    float CurrentFrame = 0;
+    float CurrentFrame = 0.f;
     EnemyLastDirection enemyLastlDirection = EnemyLastDirection::Right;
 
-    float enemyHealth = 3.f;
+    float enemyHealth;
     int direction;
-    float directionChangeCooldown = 3.0f;
+    float directionChangeCooldown = 3.f;
 };
 
 void InitEnemy(Enemy& enemy);
+
+void DrawEnemy(Enemy& enemy,
+    sf::RenderWindow& window);
 
 void UpdateEnemy(Enemy& enemy,
     const float time);

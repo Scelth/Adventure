@@ -34,10 +34,10 @@ CollisionResult HandleCollision(
     EOrientaion orientation)
 {
     const int xLeftTile = objectRect.left / TILE_SIZE.x;
-    int xRightTile = (objectRect.left + objectRect.width - 1) / TILE_SIZE.x;
+    int xRightTile = (objectRect.left + objectRect.width - 1.f) / TILE_SIZE.x;
 
     const int yTopTile = objectRect.top / TILE_SIZE.y;
-    int yBottomTile = (objectRect.top + objectRect.height - 1) / TILE_SIZE.y;
+    int yBottomTile = (objectRect.top + objectRect.height - 1.f) / TILE_SIZE.y;
 
     CollisionResult result;
     result.newPosition = objectRect.getPosition();
@@ -55,7 +55,7 @@ CollisionResult HandleCollision(
 
                 if (orientation == EOrientaion::Horizontal)
                 {
-                    if (objectVelocity.x < 0)
+                    if (objectVelocity.x < 0.f)
                     {
                         result.newPosition = sf::Vector2f(tilePosition.x + TILE_SIZE.x, objectRect.top);
                     }
@@ -68,7 +68,7 @@ CollisionResult HandleCollision(
 
                 else
                 {
-                    if (objectVelocity.y < 0)
+                    if (objectVelocity.y < 0.f)
                     {
                         result.newPosition = sf::Vector2f(objectRect.left, tilePosition.y - objectRect.height);
                     }
@@ -92,4 +92,6 @@ bool HandlePlayerEnemyCollision(sf::FloatRect& playerRect,
     {
         return true;
     }
+
+    return false;
 }

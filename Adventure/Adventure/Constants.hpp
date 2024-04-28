@@ -10,6 +10,7 @@ const float PLAYER_SPEED(300.f);
 const float ENEMY_SPEED(200.f);
 const float PLAYER_ATTACK_RADIUS(50.f);
 const int ENEMIES_COUNT(15);
+const int NUMBERS_OF_FRAME(6);
 
 const float ENEMIES_SPAWN_POSITIONS[ENEMIES_COUNT][2] = {
 	{ 60, 2755 },
@@ -31,6 +32,8 @@ const float ENEMIES_SPAWN_POSITIONS[ENEMIES_COUNT][2] = {
 
 const sf::Vector2f CHARACTER_SIZE(192.f, 192.f);
 const sf::Vector2f CHARACTER_DRAW_SCALE(1.2f, 1.2f);
+const sf::Vector2f CHARACTER_ORIGIN(55, 48);
+const sf::Vector2f CHARACTER_RECT_SIZE(85, 90);
 const sf::Vector2f PLAYER_SPAWN(750.f, 20.f);
 const sf::Vector2i TEXTURE_TILE_SIZE(5.f, 5.f);
 const sf::Vector2f DRAW_SCALE(10.f, 10.f);

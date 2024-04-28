@@ -20,21 +20,24 @@ struct Player
 
     float playerSpeed = PLAYER_SPEED;
     float CurrentFrame = 0;
-    float playerHealth = 5.f;
+    float playerHealth;
 };
 
 void InitPlayer(Player& player);
 
+void DrawPlayer(Player& player,
+    sf::RenderWindow& window);
+
 void UpdatePlayer(Player& player,
-    Sound& sound, 
+    Sound& sound,
     const float time);
 
-float PlayerAttack(Player& player, 
+float PlayerAttack(Player& player,
     sf::FloatRect& enemyRect,
     float enemyHealth,
     Sound& sound);
 
 void PlayerDirection(Player& player);
 
-bool IsPlayerAlive(const Player& player, 
+bool IsPlayerAlive(const Player& player,
     Sound& sound);

@@ -11,12 +11,12 @@ struct GameLogic
 	Player player;
 	Enemy enemies[ENEMIES_COUNT];
 	Level level;
+	Map map;
 	Tile tile;
 	LevelDescriptor levelDescriptor;
 	Sound sound;
 	UI ui;
 
-	int playerPauseChoice;
 	bool gamePaused = false;
 };
 
@@ -24,21 +24,18 @@ void CallMainMenu(sf::RenderWindow& window);
 
 void StartGame(sf::RenderWindow& window);
 
-void HandleWindowEvents(sf::RenderWindow& window, 
+void HandleWindowEvents(sf::RenderWindow& window,
 	GameLogic& gameLogic);
 
-void InitGame(GameLogic& gameLogic, 
-	sf::Texture& tileSetTexture, 
-	sf::Sprite& tileSprite);
+void InitGame(GameLogic& gameLogic);
 
 void UpdateGame(GameLogic& gameLogic,
 	const float clockDeltaSeconds,
-	const float time,
+	const float frameTime,
 	sf::RenderWindow& window);
 
 void DrawGame(sf::RenderWindow& window,
-	GameLogic& gameLogic,
-	const sf::Sprite& tileSprite);
+	GameLogic& gameLogic);
 
-void GameCamera(GameLogic& gameLogic, 
+void GameCamera(GameLogic& gameLogic,
 	sf::RenderWindow& window);

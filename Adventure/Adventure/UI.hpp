@@ -3,14 +3,15 @@
 
 struct UI
 {
-	static const int maxMainMenu = 2;
-	static const int maxPauseMenu = 3;
+	static const int maxMenuOptions = 2;
+	static const int maxPauseMenuOptions = 3;
 
-	int mainSelected;
+	int menuSelected;
 	int pauseSelected;
-	
-	sf::Texture mainMenuTexture;
-	sf::Sprite mainMenuSprite;
+	int deadSelected;
+
+	sf::Texture menuTexture;
+	sf::Sprite menuSprite;
 
 	sf::Texture pauseMenuTexture;
 	sf::Sprite pauseMenuSprite;
@@ -19,22 +20,30 @@ struct UI
 	sf::Font healthTextFont;
 
 	sf::Text healthText;
-	sf::Text mainMenuText[maxMainMenu];
-	sf::Text pauseMenuText[maxPauseMenu];
+	sf::Text mainMenuText[maxMenuOptions];
+	sf::Text deadMenuText[maxMenuOptions];
+	sf::Text pauseMenuText[maxPauseMenuOptions];
 };
-
-void InitMainMenu(UI& mainMenu);
 
 void InitUI(UI& ui);
 
-void MainMenuDraw(sf::RenderWindow& window,
-	UI& mainMenu);
+void DrawUIText(UI& ui,
+	sf::RenderWindow& window);
 
-void PauseMenuDraw(sf::RenderWindow& window,
-	UI& ui);
+void MainMenuDraw(UI& mainMenu,
+	sf::RenderWindow& window);
 
-void MainMenuMove(UI& mainMenu, 
+void PauseMenuDraw(UI& ui,
+	sf::RenderWindow& window);
+
+void DeadMenuDraw(UI& ui,
+	sf::RenderWindow& window);
+
+void MainMenuMove(UI& mainMenu,
 	const sf::Event& event);
 
-void PauseMenuMove(UI& ui, 
+void PauseMenuMove(UI& ui,
+	const sf::Event& event);
+
+void DeadMenuMove(UI& ui,
 	const sf::Event& event);

@@ -1,8 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <nlohmann/json.hpp>
 #include <fstream>
-#include <map>
 #include <vector>
 #include "TileType.hpp"
 
@@ -21,10 +19,22 @@ struct Level
 struct LevelDescriptor
 {
     std::vector<std::vector<char>> levelSymbols;
-    sf::Texture tileSetTexture;
-    std::map<TileTextureType, sf::IntRect> tileTextureTypeToTextureRect;
+    sf::Texture levelTexture;
+    std::map<TileTextureType, sf::IntRect> textureTypeToTextureRect;
 };
 
-void InitLevel(sf::Texture& tileSetTexture, sf::Sprite& tileSprite);
-Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::RenderWindow& window);
+struct Map
+{
+    sf::Texture mapTexture;
+    sf::Sprite mapSprite;
+};
+
+void InitLevel(Map& map);
+
+void DrawMap(Map& map,
+    sf::RenderWindow& window);
+
+Level CreateLevel(const LevelDescriptor& levelDescriptor,
+    sf::RenderWindow& window);
+
 std::vector<std::vector<char>> DeserializeLevel();

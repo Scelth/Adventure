@@ -8,23 +8,33 @@ void InitPlayer(Player& player)
     player.playerTexture.loadFromFile(RESOURCES_PATH + "Assets/Characters/Player.png");
 
     player.playerSprite.setTexture(player.playerTexture);
-    player.playerSprite.setTextureRect(sf::IntRect(0, 0, CHARACTER_SIZE.x, CHARACTER_SIZE.y));
+    player.playerSprite.setTextureRect(sf::IntRect(0.f, 0.f, CHARACTER_SIZE.x, CHARACTER_SIZE.y));
     player.playerSprite.setScale(CHARACTER_DRAW_SCALE);
-    player.playerSprite.setOrigin(55, 48);
-    player.playerRect = sf::FloatRect(PLAYER_SPAWN.x, PLAYER_SPAWN.y, 85, 90);
+    player.playerSprite.setOrigin(CHARACTER_ORIGIN);
+    player.playerRect = sf::FloatRect(PLAYER_SPAWN, CHARACTER_RECT_SIZE);
+
+    player.playerHealth = 5.f;
 }
 
-void UpdatePlayer(Player& player, Sound& sound, const float time)
+void DrawPlayer(Player& player,
+    sf::RenderWindow& window)
 {
-    player.CurrentFrame += 0.006 * time;
+    player.playerSprite.setPosition(player.playerRect.left, player.playerRect.top);
+    window.draw(player.playerSprite);
+}
 
-    if (player.playerHealth > 0)
+void UpdatePlayer(Player& player, Sound& sound,
+    const float frameTime)
+{
+    player.CurrentFrame += 0.006f * frameTime;
+
+    if (player.playerHealth > 0.f)
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         {
-            if (player.CurrentFrame > 6)
+            if (player.CurrentFrame > NUMBERS_OF_FRAME)
             {
-                player.CurrentFrame -= 6;
+                player.CurrentFrame -= NUMBERS_OF_FRAME;
             }
 
             player.playerVelocity.x = -player.playerSpeed;
@@ -39,9 +49,9 @@ void UpdatePlayer(Player& player, Sound& sound, const float time)
 
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         {
-            if (player.CurrentFrame > 6)
+            if (player.CurrentFrame > NUMBERS_OF_FRAME)
             {
-                player.CurrentFrame -= 6;
+                player.CurrentFrame -= NUMBERS_OF_FRAME;
             }
 
             player.playerVelocity.x = player.playerSpeed;
@@ -56,11 +66,11 @@ void UpdatePlayer(Player& player, Sound& sound, const float time)
 
         else
         {
-            player.playerVelocity.x = 0;
+            player.playerVelocity.x = 0.f;
 
-            if (player.CurrentFrame > 6)
+            if (player.CurrentFrame > NUMBERS_OF_FRAME)
             {
-                player.CurrentFrame -= 6;
+                player.CurrentFrame -= NUMBERS_OF_FRAME;
             }
 
             if (player.playerLastDirection == PlayerLastDirection::Left)
@@ -76,9 +86,9 @@ void UpdatePlayer(Player& player, Sound& sound, const float time)
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         {
-            if (player.CurrentFrame > 6)
+            if (player.CurrentFrame > NUMBERS_OF_FRAME)
             {
-                player.CurrentFrame -= 6;
+                player.CurrentFrame -= NUMBERS_OF_FRAME;
             }
 
             player.playerVelocity.y = -player.playerSpeed;
@@ -93,9 +103,9 @@ void UpdatePlayer(Player& player, Sound& sound, const float time)
 
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         {
-            if (player.CurrentFrame > 6)
+            if (player.CurrentFrame > NUMBERS_OF_FRAME)
             {
-                player.CurrentFrame -= 6;
+                player.CurrentFrame -= NUMBERS_OF_FRAME;
             }
 
             player.playerVelocity.y = player.playerSpeed;
@@ -110,20 +120,8 @@ void UpdatePlayer(Player& player, Sound& sound, const float time)
 
         else
         {
-            player.playerVelocity.y = 0;
+            player.playerVelocity.y = 0.f;
         }
-    }
-    
-    else
-    {
-        if (player.CurrentFrame > 7)
-        {
-            player.CurrentFrame -= 7;
-        }
-
-        player.playerSprite.setTextureRect(sf::IntRect(int(player.CurrentFrame) * 128, 2432, 128, 128));
-
-        player.playerVelocity = sf::Vector2f(0.f, 0.f);
     }
 }
 
@@ -147,9 +145,9 @@ float PlayerAttack(Player& player,
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        if (player.CurrentFrame > 6)
+        if (player.CurrentFrame > NUMBERS_OF_FRAME)
         {
-            player.CurrentFrame -= 6;
+            player.CurrentFrame -= NUMBERS_OF_FRAME;
         }
 
         player.playerVelocity = sf::Vector2f(0.f, 0.f);
@@ -166,12 +164,12 @@ float PlayerAttack(Player& player,
 
         player.playerAttackArea = sf::FloatRect(player.playerRect.left - PLAYER_ATTACK_RADIUS,
             player.playerRect.top,
-            player.playerRect.width + 2 * PLAYER_ATTACK_RADIUS,
+            player.playerRect.width + 2.f * PLAYER_ATTACK_RADIUS,
             player.playerRect.height);
 
         if (HandlePlayerEnemyCollision(player.playerAttackArea, enemyRect))
         {
-            if (enemyHealth > 0)
+            if (enemyHealth > 0.f)
             {
                 if (sound.playerCritAttackSound.getStatus() != sf::Sound::Playing)
                 {
@@ -196,7 +194,7 @@ float PlayerAttack(Player& player,
 
 bool IsPlayerAlive(const Player& player, Sound& sound)
 {
-    if (player.playerHealth < 0)
+    if (player.playerHealth < 0.f)
     {
         if (sound.playerDeadSound.getStatus() != sf::Sound::Playing)
         {
@@ -205,4 +203,6 @@ bool IsPlayerAlive(const Player& player, Sound& sound)
 
         return false;
     }
+
+    return true;
 }

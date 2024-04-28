@@ -1,10 +1,16 @@
+#include <nlohmann/json.hpp>
 #include "Level.hpp"
 #include "Constants.hpp"
 
-void InitLevel(sf::Texture& tileSetTexture, sf::Sprite& tileSprite)
+void InitLevel(Map& map)
 {
-    tileSetTexture.loadFromFile(RESOURCES_PATH + "Assets/Map/Map.png");
-    tileSprite.setTexture(tileSetTexture);
+    map.mapTexture.loadFromFile(RESOURCES_PATH + "Assets/Map/Map.png");
+    map.mapSprite.setTexture(map.mapTexture);
+}
+
+void DrawMap(Map& map, sf::RenderWindow& window)
+{
+    window.draw(map.mapSprite);
 }
 
 Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::RenderWindow& window)

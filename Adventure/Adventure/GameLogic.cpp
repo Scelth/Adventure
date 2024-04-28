@@ -4,13 +4,13 @@
 void CallMainMenu(sf::RenderWindow& window)
 {
     UI mainMenu;
-    InitMainMenu(mainMenu);
+    InitUI(mainMenu);
 
     bool mainMenuCall = true;
 
     while (mainMenuCall)
     {
-        MainMenuDraw(window, mainMenu);
+        MainMenuDraw(mainMenu, window);
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -31,7 +31,7 @@ void CallMainMenu(sf::RenderWindow& window)
 
                     if (event.key.code == sf::Keyboard::Enter)
                     {
-                        if (mainMenu.mainSelected == 0)
+                        if (mainMenu.menuSelected == 0)
                         {
                             mainMenuCall = false;
                             StartGame(window);
@@ -52,13 +52,10 @@ void CallMainMenu(sf::RenderWindow& window)
 void StartGame(sf::RenderWindow& window)
 {
     GameLogic gameLogic;
-    sf::Texture tileSetTexture;
-    sf::Sprite tileSprite;
 
-    InitGame(gameLogic, tileSetTexture, tileSprite);
+    InitGame(gameLogic);
 
     gameLogic.levelDescriptor.levelSymbols = DeserializeLevel();
-    gameLogic.levelDescriptor.tileSetTexture = tileSetTexture;
     gameLogic.level = CreateLevel(gameLogic.levelDescriptor, window);
 
     gameLogic.sound.playGameSound.play();
@@ -70,9 +67,9 @@ void StartGame(sf::RenderWindow& window)
         sf::sleep(sf::seconds(0.001f));
 
         float clockDeltaSeconds = clock.getElapsedTime().asSeconds();
-        float time = clock.getElapsedTime().asMicroseconds();
+        float frameTime = clock.getElapsedTime().asMicroseconds();
         clock.restart();
-        time = time / 800;
+        frameTime = frameTime / 800.f;
 
         HandleWindowEvents(window, gameLogic);
 
@@ -80,56 +77,55 @@ void StartGame(sf::RenderWindow& window)
         {
             UpdateGame(gameLogic,
                 clockDeltaSeconds,
-                time,
+                frameTime,
                 window);
 
             DrawGame(window,
-                gameLogic,
-                tileSprite);
+                gameLogic);
         }
 
         else
         {
-            PauseMenuDraw(window, gameLogic.ui);
+            if (gameLogic.player.playerHealth > 0.f)
+            {
+                PauseMenuDraw(gameLogic.ui, window);
+            }
+
+            else
+            {
+                DeadMenuDraw(gameLogic.ui, window);
+            }
         }
     }
 }
 
-void InitGame(GameLogic& gameLogic,
-    sf::Texture& tileSetTexture,
-    sf::Sprite& tileSprite)
+void InitGame(GameLogic& gameLogic)
 {
     InitUI(gameLogic.ui);
 
     for (int i = 0; i < ENEMIES_COUNT; ++i)
     {
         InitEnemy(gameLogic.enemies[i]);
-        gameLogic.enemies[i].enemyRect.left = ENEMIES_SPAWN_POSITIONS[i][0];
-        gameLogic.enemies[i].enemyRect.top = ENEMIES_SPAWN_POSITIONS[i][1];
-        gameLogic.enemies[i].enemyRect.width = 85;
-        gameLogic.enemies[i].enemyRect.height = 90;
+        gameLogic.enemies[i].enemyRect = sf::FloatRect(ENEMIES_SPAWN_POSITIONS[i][0], ENEMIES_SPAWN_POSITIONS[i][1], CHARACTER_RECT_SIZE.x, CHARACTER_RECT_SIZE.y);
     }
 
     InitPlayer(gameLogic.player);
-
-    InitLevel(tileSetTexture, tileSprite);
+    InitLevel(gameLogic.map);
     InitSound(gameLogic.sound);
 }
 
 void UpdateGame(GameLogic& gameLogic,
     const float clockDeltaSeconds,
-    const float time,
+    const float frameTime,
     sf::RenderWindow& window)
 {
     GameCamera(gameLogic, window);
 
-    CollisionResult collisionResult;
-
     // Player
     {
-        UpdatePlayer(gameLogic.player, gameLogic.sound, time);
+        UpdatePlayer(gameLogic.player, gameLogic.sound, frameTime);
 
-        if (gameLogic.player.playerHealth > 0)
+        if (gameLogic.player.playerHealth > 0.f)
         {
             for (int i = 0; i < ENEMIES_COUNT; ++i)
             {
@@ -139,18 +135,16 @@ void UpdateGame(GameLogic& gameLogic,
 
         // Player collision
         CheckCollision(gameLogic.player.playerRect, gameLogic.player.playerVelocity, gameLogic.level, clockDeltaSeconds);
-
-        gameLogic.player.playerVelocity.x = 0.f;
     }
 
     // Enemies
     for (int i = 0; i < ENEMIES_COUNT; ++i)
     {
-        UpdateEnemy(gameLogic.enemies[i], time);
+        UpdateEnemy(gameLogic.enemies[i], frameTime);
 
         for (int i = 0; i < ENEMIES_COUNT; ++i)
         {
-            if (gameLogic.enemies[i].enemyHealth > 0)
+            if (gameLogic.enemies[i].enemyHealth > 0.f)
             {
                 gameLogic.player.playerHealth = EnemyAttack(gameLogic.enemies[i], gameLogic.player.playerRect, gameLogic.player.playerHealth, gameLogic.sound);
             }
@@ -158,8 +152,6 @@ void UpdateGame(GameLogic& gameLogic,
 
         // Enemies collision
         CheckCollision(gameLogic.enemies[i].enemyRect, gameLogic.enemies[i].enemyVelocity, gameLogic.level, clockDeltaSeconds);
-
-        gameLogic.enemies[i].enemyVelocity.x = 0.f;
     }
 
     gameLogic.ui.healthText.setString("Your Life: " + std::to_string((int)gameLogic.player.playerHealth));
@@ -173,34 +165,19 @@ void UpdateGame(GameLogic& gameLogic,
 }
 
 void DrawGame(sf::RenderWindow& window,
-    GameLogic& gameLogic,
-    const sf::Sprite& tileSprite)
+    GameLogic& gameLogic)
 {
     window.clear();
 
-    window.draw(tileSprite);
-
-    for (int i = 0; i < gameLogic.level.tiles.size(); ++i)
-    {
-        for (int j = 0; j < gameLogic.level.tiles[i].size(); ++j)
-        {
-            const Tile& tile = gameLogic.level.tiles[i][j];
-
-            sf::Sprite& sprite = gameLogic.level.tileTextureTypeToSprite[tile.textureType];
-            sprite.setPosition(TILE_SIZE.x * j, TILE_SIZE.y * i);
-            window.draw(sprite);
-        }
-    }
+    DrawMap(gameLogic.map, window);
 
     for (int i = 0; i < ENEMIES_COUNT; ++i)
     {
-        gameLogic.enemies[i].enemySprite.setPosition(gameLogic.enemies[i].enemyRect.left, gameLogic.enemies[i].enemyRect.top);
-        window.draw(gameLogic.enemies[i].enemySprite);
+        DrawEnemy(gameLogic.enemies[i], window);
     }
 
-    gameLogic.player.playerSprite.setPosition(gameLogic.player.playerRect.left, gameLogic.player.playerRect.top);
-    window.draw(gameLogic.player.playerSprite);
-    window.draw(gameLogic.ui.healthText);
+    DrawPlayer(gameLogic.player, window);
+    DrawUIText(gameLogic.ui, window);
 
     window.display();
 }
@@ -223,18 +200,21 @@ void GameCamera(GameLogic& gameLogic,
 
     view.setCenter(position);
 
-    sf::Vector2f viewCenter = view.getCenter();
-    gameLogic.ui.pauseMenuSprite.setPosition(viewCenter.x - 640, viewCenter.y - 360);
-    gameLogic.ui.pauseMenuText[0].setPosition(viewCenter.x - 75, viewCenter.y - window.getSize().y / 4.f);
-    gameLogic.ui.pauseMenuText[1].setPosition(viewCenter.x - 75, viewCenter.y - window.getSize().y / 16.f);
-    gameLogic.ui.pauseMenuText[2].setPosition(viewCenter.x - 50, viewCenter.y + window.getSize().y / 8.f);
+    gameLogic.ui.pauseMenuSprite.setPosition(view.getCenter().x - (SCREEN_WIDTH / 2.f), view.getCenter().y - (SCREEN_HEIGTH / 2.f));
+    gameLogic.ui.pauseMenuText[0].setPosition(view.getCenter().x - 75, view.getCenter().y - window.getSize().y / 4.f);
+    gameLogic.ui.pauseMenuText[1].setPosition(view.getCenter().x - 75, view.getCenter().y - window.getSize().y / 16.f);
+    gameLogic.ui.pauseMenuText[2].setPosition(view.getCenter().x - 50, view.getCenter().y + window.getSize().y / 8.f);
 
     gameLogic.ui.healthText.setPosition(view.getCenter().x - window.getSize().x / 2.f, view.getCenter().y - window.getSize().y / 2.f);
+
+    gameLogic.ui.menuSprite.setPosition(view.getCenter().x - (SCREEN_WIDTH / 2.f), view.getCenter().y - (SCREEN_HEIGTH / 2.f));
+    gameLogic.ui.deadMenuText[0].setPosition(view.getCenter().x - 75, view.getCenter().y - window.getSize().y / 4.f);
+    gameLogic.ui.deadMenuText[1].setPosition(view.getCenter().x - 50, view.getCenter().y + window.getSize().y / 14.f);
 
     window.setView(view);
 }
 
-void HandleWindowEvents(sf::RenderWindow& window, 
+void HandleWindowEvents(sf::RenderWindow& window,
     GameLogic& gameLogic)
 {
     sf::Event event;
@@ -263,15 +243,13 @@ void HandleWindowEvents(sf::RenderWindow& window,
 
                 if (event.key.code == sf::Keyboard::Enter)
                 {
-                    gameLogic.playerPauseChoice = gameLogic.ui.pauseSelected;
-
-                    if (gameLogic.playerPauseChoice == 0)
+                    if (gameLogic.ui.pauseSelected == 0)
                     {
                         TurnOnAmbient(gameLogic.sound);
                         gameLogic.gamePaused = false;
                     }
 
-                    else if (gameLogic.playerPauseChoice == 1)
+                    else if (gameLogic.ui.pauseSelected == 1)
                     {
                         TurnOffAmbient(gameLogic.sound);
 
@@ -282,6 +260,36 @@ void HandleWindowEvents(sf::RenderWindow& window,
                     else
                     {
                         window.close();
+                    }
+                }
+            }
+        }
+
+        // Dead menu
+        {
+            if (gameLogic.player.playerHealth < 0.f)
+            {
+                if (event.type == sf::Event::KeyPressed)
+                {
+                    if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Up)
+                    {
+                        DeadMenuMove(gameLogic.ui, event);
+                    }
+
+                    if (event.key.code == sf::Keyboard::Enter)
+                    {
+                        if (gameLogic.ui.deadSelected == 0)
+                        {
+                            TurnOffAmbient(gameLogic.sound);
+
+                            gameLogic.gamePaused = false;
+                            StartGame(window);
+                        }
+
+                        else
+                        {
+                            window.close();
+                        }
                     }
                 }
             }
